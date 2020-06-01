@@ -11,7 +11,7 @@ namespace Game
     public interface ICalcUnitData
     {
         Button btn { get; set; }
-        UIPOS uiPos { get; set; }
+        //UIPOS uiPos { get; set; }
     }
 
     public class UnitData : ICalcUnitData
@@ -27,21 +27,23 @@ namespace Game
         public int pointDown = 1;
 
         
-
+        /// <summary>
+        /// 结果牌
+        /// </summary>
         public Button resultBtn;
 
-        public UIPOS uiPos
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
+        //public UIPOS uiPos
+        //{
+        //    get
+        //    {
+        //        throw new NotImplementedException();
+        //    }
 
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        //    set
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
 
         public Button btn { get; set; }
 
@@ -56,18 +58,18 @@ namespace Game
     {
         public CalcOper op;
 
-        UIPOS ICalcUnitData.uiPos
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
+        //UIPOS ICalcUnitData.uiPos
+        //{
+        //    get
+        //    {
+        //        throw new NotImplementedException();
+        //    }
 
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        //    set
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
 
         public Button btn { get; set; }
 
@@ -87,17 +89,18 @@ namespace Game
     {
         //Queue<CalcUnit> calcUnits = new Queue<CalcUnit>();
 
-        CalcUnit first;
-        CalcUnit second;
-        CalcUnit op;
-        int correctResult = 24;
-        int leftCalcStepNum = 3;
-        Button resultBtn;
+        public int leftCalcStepNum = 3;
+        public CalcUnit first;
+        public CalcUnit second;
+        public CalcUnit op;
 
+        public Button resultBtn;
         public Text txtFirst;
         public Text txtOp;
         public Text txtSecond;
         public Text txtResult;
+
+        int correctResult = 24;
 
         public void AddCalcUnit(CalcUnit calcUnit)
         { 
@@ -114,9 +117,23 @@ namespace Game
                 case CalcUnitType.Card:
                     if (first == null)
                     {
+                        if (second != null && second.unitData.btn == calcUnit.unitData.btn)
+                        {
+                            //first.unitData.btn.GetComponent<Outline>().enabled = false;
+                            //first = null;
+                            txtFirst.text = "";
+
+                            second.unitData.btn.GetComponent<Outline>().enabled = false;
+                            second = null;
+                            txtSecond.text = "";
+
+                            this.resultBtn = null;
+                            return;
+                        }
+
                         first = calcUnit;
-                        this.resultBtn = UnitData.Data(first.unitData).resultBtn;
                         txtFirst.text = UnitData.Data(first.unitData).pointUp.ToString();
+                        this.resultBtn = UnitData.Data(first.unitData).resultBtn;
                     }
                     else if (second == null)
                     {
@@ -125,6 +142,8 @@ namespace Game
                             first.unitData.btn.GetComponent<Outline>().enabled = false;
                             first = null;
                             txtFirst.text = "";
+
+                            this.resultBtn = null;
                             return;
                         }
                         second = calcUnit;
@@ -138,6 +157,8 @@ namespace Game
                             first.unitData.btn.GetComponent<Outline>().enabled = false;
                             first = null;
                             txtFirst.text = "";
+
+                            this.resultBtn = null;
                         }
                         else if (second.unitData.btn == calcUnit.unitData.btn)
                         {
@@ -164,6 +185,7 @@ namespace Game
                         op.unitData.btn.GetComponent<Outline>().enabled = false;
                     }
                     this.op = calcUnit;
+                    op.unitData.btn.GetComponent<Outline>().enabled = true;
                     break;
                 default:
                     throw new System.Exception(string.Format("错误的UnitType {0}", calcUnit.unitType));
@@ -215,21 +237,28 @@ namespace Game
                 resultBtn.GetComponentInChildren<Text>().text = UnitData.Data(calcUnit.unitData).pointUp.ToString();
                 txtResult.text = UnitData.Data(calcUnit.unitData).pointUp.ToString();
             }
-            
+
             //resultBtn.GetComponent<Outline>().enabled = true;
             //first = calcUnit;
             //resultBtn = UnitData.Data(first.unitData).resultBtn;
+            op.unitData.btn.GetComponent<Outline>().enabled = false;
             first = null;
             resultBtn = null;
             second = null;
             op = null;
             --leftCalcStepNum;
+            txtFirst.text = "";
+            txtSecond.text = "";
+            txtResult.text = "";
+
             if (leftCalcStepNum == 0)
             {
+
                 leftCalcStepNum = 3;
                 if (UnitData.Data(calcUnit.unitData).pointDown == 1 &&
                     UnitData.Data(calcUnit.unitData).pointUp == this.correctResult)
                 {
+                    
                     PageMgr.ShowPage<UIResult>();
                     return;
                 }
@@ -339,7 +368,7 @@ namespace Game
                 UnitData.Data(calcUnit.unitData).pointUp = r;
                 UnitData.Data(calcUnit.unitData).pointDown = 1;
             }
-            if (n1 % n2 != 0 ||
+            else if (n1 % n2 != 0 ||
                 UnitData.Data(first.unitData).pointDown != 1 ||
                 UnitData.Data(second.unitData).pointDown != 1)
             {
@@ -349,7 +378,7 @@ namespace Game
 
                 UnitData.Data(calcUnit.unitData).pointDown =
                     UnitData.Data(first.unitData).pointDown * UnitData.Data(second.unitData).pointUp;
-
+                
                 if (UnitData.Data(calcUnit.unitData).pointUp % UnitData.Data(calcUnit.unitData).pointDown == 0)
                 {
                     UnitData.Data(calcUnit.unitData).pointUp = UnitData.Data(calcUnit.unitData).pointUp / UnitData.Data(calcUnit.unitData).pointDown;

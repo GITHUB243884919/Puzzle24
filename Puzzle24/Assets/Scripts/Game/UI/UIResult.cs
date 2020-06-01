@@ -1,6 +1,9 @@
 ﻿using Game.MessageCenter;
 using UFrame;
 using UnityEngine;
+using DG.Tweening;
+using DG.Tweening.Plugins.Options;
+using DG.Tweening.Core;
 
 public class UIResult : UIPage
 {
@@ -8,12 +11,14 @@ public class UIResult : UIPage
     {
         uiPath = "UIPrefab/UIResult";
     }
+
     public override void Awake(GameObject go)
     {
         base.Awake(go);
         //初始化控件
         RegComponent();
         GetTransPrefabAllTextShow(this.transform);
+        transform.Find("oper_grid/op_next").DOScale(1.2f, 0.2f).SetLoops(-1, LoopType.Yoyo);
     }
 
     protected void RegComponent()
@@ -24,7 +29,7 @@ public class UIResult : UIPage
     protected void OnClickedNextLevel(string objName)
     {
         PageMgr.ClosePage(this);
-        var level = PageMgr.GetPage<UILevel>();
+        var level = PageMgr.GetPage<UILevel2>();
         level.GenLevel(true);
     }
 

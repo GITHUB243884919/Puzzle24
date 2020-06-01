@@ -40,10 +40,13 @@ public class AdmobManager : SingletonMono<AdmobManager>
         {
             if (!isInit || rewardedAd == null)
             {
+                Debug.LogErrorFormat("AdmobManager.isLoaded isInit={0}, rewardedAd==null {1}", isInit, rewardedAd == null);
                 return false;
             }
 
-            return this.rewardedAd.IsLoaded();
+            bool retCode = this.rewardedAd.IsLoaded();
+            Debug.LogErrorFormat("AdmobManager.isLoaded rewardedAd.IsLoaded() = {0}", retCode);
+            return retCode;
         }
     }
 
@@ -91,7 +94,8 @@ public class AdmobManager : SingletonMono<AdmobManager>
             {
                 this.stateTxt.text = "Initialize OK";
             }
-            
+
+            Debug.LogError("AdmobManager.OnInit LoadReawrdAD");
             LoadReawrdAD();
         });
     }
@@ -148,6 +152,8 @@ public class AdmobManager : SingletonMono<AdmobManager>
         }
 
         MessageManager.GetInstance().Send((int)GameMessageDefine.RewardADLoadFail);
+        Debug.LogError("AdmobManager.HandleRewardedAdFailedToLoad LoadReawrdAD");
+        LoadReawrdAD();
     }
 
     public void HandleRewardedAdOpening(object sender, EventArgs args)
@@ -178,6 +184,8 @@ public class AdmobManager : SingletonMono<AdmobManager>
         {
             stateTxt.text = "HandleRewardedAdClosed event received";
         }
+
+        Debug.LogError("AdmobManager.HandleRewardedAdClosed LoadReawrdAD"); 
         LoadReawrdAD();
     }
 

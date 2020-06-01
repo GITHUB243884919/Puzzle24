@@ -27,7 +27,7 @@ namespace Game.GlobalData
         /// <summary>
         /// 提示次数
         /// </summary>
-        public int leftNumTips = 5;
+        public int leftNumTips = 3;
 
         /// <summary>
         /// 直接下一局次数
@@ -44,7 +44,7 @@ namespace Game.GlobalData
             isFirstInstall = false;
             isSound = true;
             leftNumResetPoker = 10;
-            leftNumTips = 5;
+            leftNumTips = 3;
             leftNumNextPoker = 10;
         }
 

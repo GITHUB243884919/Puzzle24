@@ -89,6 +89,7 @@ namespace Game
 
         public void Update()
         {
+            SetAndroidQuit();
             this.Tick(Math_F.FloatToInt1000(Time.deltaTime));
         }
 
@@ -219,7 +220,7 @@ namespace Game
         {
             LoadSceneModule();
             GameModuleManager.GetInstance().Run();
-            
+
         }
 
         protected void OnUIMessage_AddToTick(Message msg)
@@ -234,7 +235,7 @@ namespace Game
             var _msg = msg as MessageString;
             RemovePageFromTick(_msg.str);
         }
-        
+
         protected void OnNotFoundMessage(int messageID)
         {
             if (messageID < 10001)
@@ -244,6 +245,19 @@ namespace Game
             }
 
             LogWarp.LogErrorFormat("消息未注册  {0}  {1}", (GameMessageDefine)messageID, messageID);
+        }
+
+        [System.Diagnostics.Conditional("UNITY_ANDROID")]
+        protected void SetAndroidQuit()
+        {
+#if UNITY_EDITOR
+            if (Input.GetKeyDown(KeyCode.Escape))
+#else
+        if (Application.platform == RuntimePlatform.Android && Input.GetKeyDown(KeyCode.Escape)) 
+#endif
+            {
+                PageMgr.ShowPage<UIQuitGamePage>();
+            }
         }
     }
 

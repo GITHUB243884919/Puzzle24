@@ -126,7 +126,7 @@ public class UILevel2 : UIPage
     /// </summary>
     bool requestADButUnload = false;
 
-    public UILevel2() : base(UIType.PopUp, UIMode.DoNothing, UICollider.None, UITickedMode.Update)
+    public UILevel2() : base(UIType.Fixed, UIMode.DoNothing, UICollider.None, UITickedMode.Update)
     {
         uiPath = "UIPrefab/UILevel";
     }
@@ -138,7 +138,6 @@ public class UILevel2 : UIPage
         InitComponent();
 
         GenLevel(true);
-
         GlobalDataManager.GetInstance().cardModel.txtFirst = this.txtFirst;
         GlobalDataManager.GetInstance().cardModel.txtOp = this.txtOp;
         GlobalDataManager.GetInstance().cardModel.txtSecond = this.txtSecond;
@@ -149,8 +148,6 @@ public class UILevel2 : UIPage
         MessageManager.GetInstance().Regist((int)GameMessageDefine.RewardADLoadSuccess, OnRewardADLoadSuccess);
 
         MessageManager.GetInstance().Regist((int)GameMessageDefine.RewardADLoadFail, OnRewardADLoadFail);
-
-        
     }
 
     public override void Tick(int deltaTimeMS)
@@ -167,6 +164,17 @@ public class UILevel2 : UIPage
     {
         txtTips.text = "";
 
+        txtFirst.text = "";
+        txtOp.text = "";
+        txtSecond.text = "";
+        txtResult.text = "";
+
+        GlobalDataManager.GetInstance().cardModel.leftCalcStepNum = 3;
+        GlobalDataManager.GetInstance().cardModel.first = null;
+        GlobalDataManager.GetInstance().cardModel.second = null;
+        GlobalDataManager.GetInstance().cardModel.op = null;
+        GlobalDataManager.GetInstance().cardModel.resultBtn = null;
+
         //所有的outline隐藏
         HideOutline();
 
@@ -176,6 +184,8 @@ public class UILevel2 : UIPage
         //显示扑克
         ShowPoker();
 
+        transform.Find("guide").gameObject.SetActive(true);
+        //txtLeftTips.gameObject.SetActive(false);
         //重置
         if (!isNewLevel)
         {
@@ -297,7 +307,15 @@ public class UILevel2 : UIPage
         txtLeftReset.text = playerData.leftNumResetPoker.ToString();
 
         txtLeftTips = RegistCompent<Text>("head/tips/text");
-        txtLeftTips.text = playerData.leftNumTips.ToString();
+        if (playerData.leftNumTips > 0)
+        {
+            txtLeftTips.text = playerData.leftNumTips.ToString();
+        }
+        else
+        {
+            txtLeftTips.text = "AD";
+        }
+        
 
         txtLeftNext = RegistCompent<Text>("head/next/text");
         txtLeftNext.text = playerData.leftNumNextPoker.ToString();
@@ -306,6 +324,8 @@ public class UILevel2 : UIPage
         txtOp = RegistCompent<Text>("Txt_op");
         txtSecond = RegistCompent<Text>("Txt_second");
         txtResult = RegistCompent<Text>("Txt_result");
+
+        RegistBtnAndClick("head/btn_AD", OnClickedAD);
     }
 
     protected void HideOutline()
@@ -380,7 +400,7 @@ public class UILevel2 : UIPage
                     UnitData.Data(calcUnit.unitData).pointUp = int.Parse(s[0]);
                     UnitData.Data(calcUnit.unitData).pointDown = int.Parse(s[1]);
                 }
-                UnitData.Data(calcUnit.unitData).resultBtn = btnResultBottomRight;
+                UnitData.Data(calcUnit.unitData).resultBtn = btnResultTopLeft;
                 GlobalDataManager.GetInstance().cardModel.AddCalcUnit(calcUnit);
                 break;
             case "result_topright":
@@ -409,7 +429,7 @@ public class UILevel2 : UIPage
                     UnitData.Data(calcUnit.unitData).pointUp = int.Parse(s[0]);
                     UnitData.Data(calcUnit.unitData).pointDown = int.Parse(s[1]);
                 }
-                UnitData.Data(calcUnit.unitData).resultBtn = btnResultTopRight;
+                UnitData.Data(calcUnit.unitData).resultBtn = btnResultBottomLeft;
                 GlobalDataManager.GetInstance().cardModel.AddCalcUnit(calcUnit);
                 break;
             case "result_bottomright":
@@ -458,28 +478,73 @@ public class UILevel2 : UIPage
     }
     #endregion
 
+    protected void OnClickedAD(Button obj)
+    {
+        if (AdmobManager.GetInstance().isLoaded)
+        {
+            requestADButUnload = false;
+            AdmobManager.GetInstance().UserChoseToWatchAd(OnTipsWatchRewardAdSuccessed);
+        }
+        else
+        {
+            requestADButUnload = true;
+            PageMgr.ShowPage<UIWaitAd>(5000);
+        }
+    }
+
     protected void OnClickRestart(Button obj)
     {
-        if (playerData.leftNumResetPoker > 0)
-        {
-            --playerData.leftNumResetPoker;
-            txtLeftReset.text = playerData.leftNumResetPoker.ToString();
+        //if (playerData.leftNumResetPoker > 0)
+        //{
+        //    --playerData.leftNumResetPoker;
+        //    txtLeftReset.text = playerData.leftNumResetPoker.ToString();
             GenLevel(false);
-        }
+        //}
     }
 
     protected void OnClickNext(Button obj)
     {
-        if (playerData.leftNumNextPoker > 0)
-        {
-            --playerData.leftNumNextPoker;
-            txtLeftNext.text = playerData.leftNumNextPoker.ToString();
+        //if (playerData.leftNumNextPoker > 0)
+        //{
+        //    --playerData.leftNumNextPoker;
+        //    txtLeftNext.text = playerData.leftNumNextPoker.ToString();
             GenLevel(true);
-        }
+        //}
     }
 
     protected void OnClickTips(Button obj)
     {
+#if UNITY_EDITOR
+        OnTipsWatchRewardAdSuccessed();
+        if (playerData.leftNumTips > 0)
+        {
+            --playerData.leftNumTips;
+            if (playerData.leftNumTips > 0)
+            {
+                txtLeftTips.text = playerData.leftNumTips.ToString();
+            }
+            else
+            {
+                txtLeftTips.text = "AD";
+            }
+        }
+        return;
+#endif
+        if (playerData.leftNumTips > 0)
+        {
+            --playerData.leftNumTips;
+            if (playerData.leftNumTips > 0)
+            {
+                txtLeftTips.text = playerData.leftNumTips.ToString();
+            }
+            else
+            {
+                txtLeftTips.text = "AD";
+            }
+            OnTipsWatchRewardAdSuccessed();
+            return;
+        }
+
         if (AdmobManager.GetInstance().isLoaded)
         {
             requestADButUnload = false;
@@ -494,8 +559,16 @@ public class UILevel2 : UIPage
 
     void OnTipsWatchRewardAdSuccessed()
     {
-        ++playerData.leftNumTips;
-        txtLeftTips.text = playerData.leftNumTips.ToString();
+        //++playerData.leftNumTips;
+        transform.Find("guide").gameObject.SetActive(false);
+        if (playerData.leftNumTips > 0)
+        {
+            txtLeftTips.text = playerData.leftNumTips.ToString();
+        }
+        else
+        {
+            txtLeftTips.text = "AD";
+        }
         txtTips.text = strTips;
     }
     
