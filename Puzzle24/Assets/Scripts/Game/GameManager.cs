@@ -10,12 +10,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UFrame.Common;
-using UFrame;
+using HillUFrame;
+using HillUFrame.Common;
 using Game.GlobalData;
 using Game.MessageCenter;
-using UFrame.MessageCenter;
-using UFrame.Logger;
+using HillUFrame.MessageCenter;
+using HillUFrame.Logger;
 using System;
 
 namespace Game
@@ -84,7 +84,7 @@ namespace Game
             //ThirdPartTA.UserSet(taParam);
 
             LogWarp.Log("LoadingMgr.Inst.isRunning = true");
-            LoadingMgr.Inst.isRunning = true;
+            GameRoot.GetInstance().isRunning = true;
         }
 
         public void Update()

@@ -17,9 +17,9 @@ namespace Game.GlobalData
 
         protected void Init()
         {
-            if (LoadingMgr.Inst.isUsedlanguage)
+            if (GameRoot.GetInstance().isUsedlanguage)
             {
-                currLanguage = LoadingMgr.Inst.language;
+                currLanguage = GameRoot.GetInstance().language;
                 if (currLanguage == SystemLanguage.Chinese)
                 {
                     currLanguage = SystemLanguage.ChineseSimplified;

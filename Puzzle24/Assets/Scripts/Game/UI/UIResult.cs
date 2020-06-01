@@ -1,9 +1,10 @@
 ﻿using Game.MessageCenter;
-using UFrame;
+using HillUFrame;
 using UnityEngine;
 using DG.Tweening;
 using DG.Tweening.Plugins.Options;
 using DG.Tweening.Core;
+using HillUFrame.MiniGame;
 
 public class UIResult : UIPage
 {
@@ -19,6 +20,13 @@ public class UIResult : UIPage
         RegComponent();
         GetTransPrefabAllTextShow(this.transform);
         transform.Find("oper_grid/op_next").DOScale(1.2f, 0.2f).SetLoops(-1, LoopType.Yoyo);
+    }
+
+    public override void Active()
+    {
+        base.Active();
+
+        SoundManager.GetInstance().PlaySound("music/AnimalOpenMusic");
     }
 
     protected void RegComponent()

@@ -2,9 +2,9 @@
 using Game;
 using Game.GlobalData;
 using Game.MessageCenter;
-using UFrame;
-using UFrame.MessageCenter;
-using UFrame.MiniGame;
+using HillUFrame;
+using HillUFrame.MessageCenter;
+using HillUFrame.MiniGame;
 using UnityEngine;
 using UnityEngine.UI;
 
